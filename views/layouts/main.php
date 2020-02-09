@@ -45,6 +45,8 @@ AppAsset::register($this);
             ['label' => 'Lectores', 'url' => ['/lectores/index']],
             ['label' => 'Libros', 'url' => ['/libros/index']],
             ['label' => 'Prestamos', 'url' => ['/prestamos/index']],
+            ['label' => 'Generos', 'url' => ['/generos/index']],
+
 
 
             Yii::$app->user->isGuest ? (

@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Handles the creation of table `{{%libros}}`.
  */
-class m200209_114638_create_libros_table extends Migration
+class m200209_131115_create_libros_table extends Migration
 {
     /**
      * {@inheritdoc}
@@ -14,11 +14,20 @@ class m200209_114638_create_libros_table extends Migration
     {
         $this->createTable('{{%libros}}', [
             'id' => $this->primaryKey(),
-            'denom' => $this->string(60),
+            'titulo' => $this->string(60),
+            'genero_id' => $this->bigInteger()->notNull(),
             'num_pags' => $this->integer(),
             'isbn' => $this->string(13),
             'created_at' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
         ]);
+
+        $this->addForeignKey(
+            'fk_libros_generos',
+            'libros',
+            'genero_id',
+            'generos',
+            'id'
+        );
     }
 
     /**
@@ -26,6 +35,7 @@ class m200209_114638_create_libros_table extends Migration
      */
     public function safeDown()
     {
+        $this->dropForeignKey('fk_libros_generos','libros');
         $this->dropTable('{{%libros}}');
     }
 }

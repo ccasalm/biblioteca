@@ -8,10 +8,14 @@ use Yii;
  * This is the model class for table "libros".
  *
  * @property int $id
- * @property string|null $denom
+ * @property string|null $titulo
+ * @property int $genero_id
  * @property int|null $num_pags
  * @property string|null $isbn
  * @property string $created_at
+ *
+ * @property Generos $genero
+ * @property Prestamos[] $prestamos
  */
 class Libros extends \yii\db\ActiveRecord
 {
@@ -29,11 +33,13 @@ class Libros extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['num_pags'], 'default', 'value' => null],
-            [['num_pags'], 'integer'],
+            [['genero_id'], 'required'],
+            [['genero_id', 'num_pags'], 'default', 'value' => null],
+            [['genero_id', 'num_pags'], 'integer'],
             [['created_at'], 'safe'],
-            [['denom'], 'string', 'max' => 60],
+            [['titulo'], 'string', 'max' => 60],
             [['isbn'], 'string', 'max' => 13],
+            [['genero_id'], 'exist', 'skipOnError' => true, 'targetClass' => Generos::className(), 'targetAttribute' => ['genero_id' => 'id']],
         ];
     }
 
@@ -44,10 +50,27 @@ class Libros extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'denom' => 'Título',
+            'titulo' => 'Titulo',
+            'genero_id' => 'Genero ID',
             'num_pags' => 'Num Pags',
             'isbn' => 'Isbn',
-            'created_at' => 'Fecha Alta',
+            'created_at' => 'Created At',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getGenero()
+    {
+        return $this->hasOne(Generos::className(), ['id' => 'genero_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPrestamos()
+    {
+        return $this->hasMany(Prestamos::className(), ['libro_id' => 'id']);
     }
 }
