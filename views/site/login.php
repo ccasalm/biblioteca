@@ -26,12 +26,15 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
 
         <?= $form->field($model, 'password')->passwordInput() ?>
-
+        <div class="form-group">
         <?= $form->field($model, 'rememberMe')->checkbox() ?>
+        <?= Html::a('Recuperar contraseña', ['usuarios/recuperarpass'],['class' => 'col-sm-5 col-sm-10 offset-sm-2']) ?>
+        </div>
+
 
         <div class="form-group">
             <div class="offset-sm-2">
-                <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
+                <?= Html::submitButton('Login', ['class' => 'btn btn-primary ', 'name' => 'login-button']) ?>
             </div>
         </div>
 

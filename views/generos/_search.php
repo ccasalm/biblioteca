@@ -4,7 +4,7 @@ use yii\bootstrap4\Html;
 use yii\bootstrap4\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model app\modelsGenerosSearch */
+/* @var $model app\models\GenerosSearch */
 /* @var $form yii\bootstrap4\ActiveForm */
 ?>
 
@@ -18,6 +18,8 @@ use yii\bootstrap4\ActiveForm;
     <?= $form->field($model, 'id') ?>
 
     <?= $form->field($model, 'denom') ?>
+
+    <?= $form->field($model, 'created_at') ?>
 
     <div class="form-group">
         <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>

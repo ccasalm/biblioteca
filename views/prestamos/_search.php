@@ -17,9 +17,9 @@ use yii\bootstrap4\ActiveForm;
 
     <?= $form->field($model, 'id') ?>
 
-    <?= $form->field($model, 'lector_id') ?>
-
     <?= $form->field($model, 'libro_id') ?>
+
+    <?= $form->field($model, 'lector_id') ?>
 
     <?= $form->field($model, 'created_at') ?>
 

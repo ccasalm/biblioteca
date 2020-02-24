@@ -8,10 +8,17 @@ use Yii;
  * This is the model class for table "lectores".
  *
  * @property int $id
+ * @property string $numero
  * @property string $nombre
- * @property string $created_at
- * @property string|null $telefono
+ * @property string|null $direccion
  * @property string|null $poblacion
+ * @property string|null $provincia
+ * @property float|null $cod_postal
+ * @property string|null $fecha_nac
+ * @property string $created_at
+ * 
+ * @property Prestamos[] $prestamos
+ * @property Libros[] $libros
  */
 class Lectores extends \yii\db\ActiveRecord
 {
@@ -29,11 +36,12 @@ class Lectores extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['nombre'], 'required'],
-            [['created_at'], 'safe'],
-            [['nombre'], 'string', 'max' => 60],
-            [['telefono', 'poblacion'], 'string', 'max' => 255],
-            [['telefono'], 'unique'],
+            [['numero', 'nombre', 'poblacion', 'provincia'], 'required'],
+            [['cod_postal'], 'number'],
+            [['fecha_nac', 'created_at'], 'safe'],
+            [['numero'], 'string', 'max' => 9],
+            [['nombre', 'direccion', 'poblacion', 'provincia'], 'string', 'max' => 255],
+            [['numero'], 'unique'],
         ];
     }
 
@@ -44,10 +52,40 @@ class Lectores extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'numero' => 'Número',
             'nombre' => 'Nombre',
-            'created_at' => 'Fecha Alta',
-            'telefono' => 'Telefono',
-            'poblacion' => 'Poblacion',
+            'direccion' => 'Dirección',
+            'poblacion' => 'Población',
+            'provincia' => 'Provincia',
+            'cod_postal' => 'Cod Postal',
+            'fecha_nac' => 'Fecha Nac',
+            'created_at' => 'Created At',
         ];
+    }
+
+    /** 
+     * @return \yii\db\ActiveQuery 
+     */ 
+    public function getPrestamos() 
+    {
+        return $this->hasMany(Prestamos::className(), ['lector_id' => 'id'])->inverseOf('lector');
+    }
+
+    public function getLibros()
+    {
+        return $this->hasMany(Libros::class, ['id' => 'libro_id'])->via('prestamos');
+    }
+
+    public function getPrestados()
+    {
+        return $this->getLibros()
+            ->via('prestamos', function ($query) {
+                $query->andWhere(['devolucion' => null]);
+            });
+    }
+
+    public static function lista()
+    {
+        return static::find()->select('nombre')->indexBy('id')->column();
     }
 }

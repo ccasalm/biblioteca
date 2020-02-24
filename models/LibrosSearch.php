@@ -17,9 +17,14 @@ class LibrosSearch extends Libros
     public function rules()
     {
         return [
-            [['id', 'genero_id', 'num_pags'], 'integer'],
-            [['titulo', 'isbn', 'created_at'], 'safe'],
+            [['id', 'num_pags', 'genero_id'], 'integer'],
+            [['isbn', 'titulo', 'created_at', 'genero.denom'], 'safe'],
         ];
+    }
+
+    public function attributes()
+    {
+        return array_merge(parent::attributes(), ['genero.denom']);
     }
 
     /**
@@ -40,13 +45,18 @@ class LibrosSearch extends Libros
      */
     public function search($params)
     {
-        $query = Libros::find();
+        $query = Libros::find()->joinWith('genero g');
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
+
+        $dataProvider->sort->attributes['genero.denom'] = [
+            'asc' => ['g.denom' => SORT_ASC],
+            'desc' => ['g.denom' => SORT_DESC],
+        ];
 
         $this->load($params);
 
@@ -59,13 +69,14 @@ class LibrosSearch extends Libros
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'genero_id' => $this->genero_id,
             'num_pags' => $this->num_pags,
+            'genero_id' => $this->genero_id,
             'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['ilike', 'titulo', $this->titulo])
-            ->andFilterWhere(['ilike', 'isbn', $this->isbn]);
+        $query->andFilterWhere(['ilike', 'isbn', $this->isbn])
+            ->andFilterWhere(['ilike', 'titulo', $this->titulo])
+            ->andFilterWhere(['ilike', 'g.denom', $this->getAttribute('genero.denom')]);
 
         return $dataProvider;
     }

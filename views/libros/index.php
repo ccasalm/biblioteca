@@ -24,16 +24,20 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            'titulo',
-            'genero_id',
-            'num_pags',
             'isbn',
-            //'created_at',
-
-            ['class' => 'yii\grid\ActionColumn'],
+            'titulo',
+            'num_pags',
+            'genero.denom',
+            'created_at:datetime',
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{view} {update} {delete} {portada}',
+                'buttons' => [
+                    'portada' => function ($url, $model, $key) {
+                        return Html::a('Portada', ['libros/imagen', 'id' => $key]);
+                    }
+                ],
+            ],
         ],
     ]); ?>
 

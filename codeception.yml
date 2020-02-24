@@ -14,9 +14,9 @@ modules:
             configFile: 'config/test.php'
     enabled:
         - Db:
-            dsn: 'pgsql:host=localhost;dbname=biblioteca_test'
-            user: 'biblioteca'
-            password: 'biblioteca'
+            dsn: 'pgsql:host=localhost;dbname=biblio_test'
+            user: 'biblio'
+            password: 'biblio'
 
 # To enable code coverage:
 #coverage:

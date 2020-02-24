@@ -8,17 +8,21 @@ use Yii;
  * This is the model class for table "libros".
  *
  * @property int $id
- * @property string|null $titulo
- * @property int $genero_id
+ * @property string $isbn
+ * @property string $titulo
  * @property int|null $num_pags
- * @property string|null $isbn
+ * @property int $genero_id
  * @property string $created_at
  *
  * @property Generos $genero
  * @property Prestamos[] $prestamos
+ * @property Lectores[] $lectores
  */
 class Libros extends \yii\db\ActiveRecord
 {
+    private $_imagen = null;
+    private $_imagenUrl = null;
+
     /**
      * {@inheritdoc}
      */
@@ -33,12 +37,13 @@ class Libros extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['genero_id'], 'required'],
-            [['genero_id', 'num_pags'], 'default', 'value' => null],
-            [['genero_id', 'num_pags'], 'integer'],
+            [['isbn', 'titulo', 'genero_id'], 'required'],
+            [['num_pags', 'genero_id'], 'default', 'value' => null],
+            [['num_pags', 'genero_id'], 'integer'],
             [['created_at'], 'safe'],
-            [['titulo'], 'string', 'max' => 60],
             [['isbn'], 'string', 'max' => 13],
+            [['titulo'], 'string', 'max' => 255],
+            [['isbn'], 'unique'],
             [['genero_id'], 'exist', 'skipOnError' => true, 'targetClass' => Generos::className(), 'targetAttribute' => ['genero_id' => 'id']],
         ];
     }
@@ -50,11 +55,11 @@ class Libros extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'titulo' => 'Titulo',
-            'genero_id' => 'Genero ID',
-            'num_pags' => 'Num Pags',
             'isbn' => 'Isbn',
-            'created_at' => 'Created At',
+            'titulo' => 'Título',
+            'num_pags' => 'Núm. Pags.',
+            'genero_id' => 'Género ID',
+            'created_at' => 'Fecha de alta',
         ];
     }
 
@@ -63,14 +68,62 @@ class Libros extends \yii\db\ActiveRecord
      */
     public function getGenero()
     {
-        return $this->hasOne(Generos::className(), ['id' => 'genero_id']);
+        return $this->hasOne(Generos::className(), ['id' => 'genero_id'])->inverseOf('libros');
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getPrestamos()
+    /** 
+     * @return \yii\db\ActiveQuery 
+     */ 
+    public function getPrestamos() 
+    { 
+        return $this->hasMany(Prestamos::className(), ['libro_id' => 'id'])->inverseOf('libro'); 
+    }
+
+    public function getLectores()
     {
-        return $this->hasMany(Prestamos::className(), ['libro_id' => 'id']);
+        return $this->hasMany(Lectores::class, ['id' => 'lector_id'])->via('prestamos');
+    }
+
+    public function getEstaPrestado()
+    {
+        return $this->getPrestamos()
+            ->andOnCondition(['devolucion' => null])
+            ->exists();
+    }
+
+    public function getImagen()
+    {
+        if ($this->_imagen !== null) {
+            return $this->_imagen;
+        }
+
+        $this->setImagen(Yii::getAlias('@img/' . $this->id . '.jpg'));
+        return $this->_imagen;
+    }
+
+
+    public function setImagen($imagen)
+    {
+        $this->_imagen = $imagen;
+    }
+
+    public function getImagenUrl()
+    {
+        if ($this->_imagenUrl !== null) {
+            return $this->_imagenUrl;
+        }
+
+        $this->setImagenUrl(Yii::getAlias('@imgUrl/' . $this->id . '.jpg'));
+        return $this->_imagenUrl;
+    }
+
+    public function setImagenUrl($imagenUrl)
+    {
+        $this->_imagenUrl = $imagenUrl;
+    }
+
+    public static function lista()
+    {
+        return static::find()->select('titulo')->indexBy('id')->column();
     }
 }

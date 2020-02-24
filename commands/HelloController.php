@@ -7,6 +7,7 @@
 
 namespace app\commands;
 
+use app\models\Usuarios;
 use yii\console\Controller;
 use yii\console\ExitCode;
 
@@ -28,6 +29,13 @@ class HelloController extends Controller
     public function actionIndex($message = 'hello world')
     {
         echo $message . "\n";
+
+        return ExitCode::OK;
+    }
+
+    public function actionLimpiar()
+    {
+        Usuarios::deleteAll("token != null and created_at + '2 days' < localtimestamp");
 
         return ExitCode::OK;
     }

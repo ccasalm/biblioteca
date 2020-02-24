@@ -5,7 +5,7 @@ use yii\bootstrap4\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Lectores */
 
-$this->title = 'Registrar Lector';
+$this->title = 'Create Lectores';
 $this->params['breadcrumbs'][] = ['label' => 'Lectores', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

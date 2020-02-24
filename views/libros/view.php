@@ -29,12 +29,18 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
-            'titulo',
-            'genero_id',
-            'num_pags',
             'isbn',
-            'created_at',
+            'titulo',
+            'num_pags',
+            'genero.denom',
+            'created_at:datetime',
+            [
+                'attribute' => 'imagen',
+                'value' => function ($model, $widget) {
+                    return Html::img($model->imagenUrl, ['width' => 400]);
+                },
+                'format' => 'raw',
+            ],
         ],
     ]) ?>
 

@@ -1,15 +1,15 @@
 <?php
 
-namespace app;
+namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Generos;
 
 /**
- * modelsGenerosSearch represents the model behind the search form of `app\models\Generos`.
+ * GenerosSearch represents the model behind the search form of `app\models\Generos`.
  */
-class modelsGenerosSearch extends Generos
+class GenerosSearch extends Generos
 {
     /**
      * {@inheritdoc}
@@ -17,8 +17,8 @@ class modelsGenerosSearch extends Generos
     public function rules()
     {
         return [
-            [['id'], 'integer'],
-            [['denom'], 'safe'],
+            [['id', 'total'], 'integer'],
+            [['denom', 'created_at'], 'safe'],
         ];
     }
 
@@ -40,13 +40,21 @@ class modelsGenerosSearch extends Generos
      */
     public function search($params)
     {
-        $query = Generos::find();
+        $query = Generos::findWithTotal();
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => 5,
+            ]
         ]);
+
+        $dataProvider->sort->attributes['total'] = [
+            'asc' => ['COUNT(l.id)' => SORT_ASC],
+            'desc' => ['COUNT(l.id)' => SORT_DESC],
+        ];
 
         $this->load($params);
 
@@ -59,9 +67,11 @@ class modelsGenerosSearch extends Generos
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'created_at' => $this->created_at,
         ]);
 
         $query->andFilterWhere(['ilike', 'denom', $this->denom]);
+        $query->andFilterHaving(['COUNT(l.id)' => $this->total]);
 
         return $dataProvider;
     }

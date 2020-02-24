@@ -3,21 +3,21 @@
 use yii\db\Migration;
 
 /**
- * Handles the creation of table `{{%prestamos}}`.
+ * Class m200206_191122_create_prestamos
  */
-class m200209_131212_create_prestamos_table extends Migration
+class m200206_191122_create_prestamos extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->createTable('{{%prestamos}}', [
+        $this->createTable('prestamos', [
             'id' => $this->primaryKey(),
-            'lector_id' => $this->bigInteger()->notNull(),
             'libro_id' => $this->bigInteger()->notNull(),
-            'created_at' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
-            'devolucion' => $this->timestamp()
+            'lector_id' => $this->bigInteger()->notNull(),
+            'created_at' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP')->unique(),
+            'devolucion' => $this->timestamp(),
         ]);
 
         $this->addForeignKey(
@@ -43,10 +43,8 @@ class m200209_131212_create_prestamos_table extends Migration
                 'libro_id',
                 'lector_id',
                 'created_at',
-            ],
-            true,
+            ], true,
         );
-
     }
 
     /**
@@ -54,9 +52,27 @@ class m200209_131212_create_prestamos_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropIndex('idx_prestamos_libro_id_lector_id_created_at', 'prestamos');
+        $this->dropIndex(
+            'idx_prestamos_libro_id_lector_id_created_at',
+            'prestamos'
+        );
         $this->dropForeignKey('fk_prestamos_lectores', 'prestamos');
         $this->dropForeignKey('fk_prestamos_libros', 'prestamos');
-        $this->dropTable('{{%prestamos}}');
+        $this->dropTable('prestamos');
     }
+
+    /*
+    // Use up()/down() to run migration code without a transaction.
+    public function up()
+    {
+
+    }
+
+    public function down()
+    {
+        echo "m200206_191122_create_prestamos cannot be reverted.\n";
+
+        return false;
+    }
+    */
 }

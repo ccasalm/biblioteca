@@ -12,15 +12,14 @@ use yii\bootstrap4\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'titulo')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'isbn')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'genero_id')->textInput() ?>
+    <?= $form->field($model, 'titulo')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'num_pags')->textInput() ?>
 
-    <?= $form->field($model, 'isbn')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'genero_id')->label('Genero')->dropDownList($generos) ?>
 
-    <?= $form->field($model, 'created_at')->textInput() ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

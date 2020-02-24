@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Registrar', ['create'], ['class' => 'btn btn-success btn-sm']) ?>
+        <?= Html::a('Registrar Lector', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -24,13 +24,16 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
+            'numero',
             'nombre',
-            'telefono',
+            'direccion',
             'poblacion',
-            'created_at:datetime',
-            [
-                'class' => 'yii\grid\ActionColumn',
-            ]
+            //'provincia',
+            //'cod_postal',
+            //'fecha_nac',
+            //'created_at',
+
+            ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 

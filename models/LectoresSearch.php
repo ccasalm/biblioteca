@@ -18,7 +18,8 @@ class LectoresSearch extends Lectores
     {
         return [
             [['id'], 'integer'],
-            [['nombre', 'created_at', 'telefono', 'poblacion'], 'safe'],
+            [['numero', 'nombre', 'direccion', 'poblacion', 'provincia', 'fecha_nac', 'created_at'], 'safe'],
+            [['cod_postal'], 'number'],
         ];
     }
 
@@ -59,12 +60,16 @@ class LectoresSearch extends Lectores
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'cod_postal' => $this->cod_postal,
+            'fecha_nac' => $this->fecha_nac,
             'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['ilike', 'nombre', $this->nombre])
-            ->andFilterWhere(['ilike', 'telefono', $this->telefono])
-            ->andFilterWhere(['ilike', 'poblacion', $this->poblacion]);
+        $query->andFilterWhere(['ilike', 'numero', $this->numero])
+            ->andFilterWhere(['ilike', 'nombre', $this->nombre])
+            ->andFilterWhere(['ilike', 'direccion', $this->direccion])
+            ->andFilterWhere(['ilike', 'poblacion', $this->poblacion])
+            ->andFilterWhere(['ilike', 'provincia', $this->provincia]);
 
         return $dataProvider;
     }

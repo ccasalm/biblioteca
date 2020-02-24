@@ -17,13 +17,21 @@ use yii\bootstrap4\ActiveForm;
 
     <?= $form->field($model, 'id') ?>
 
+    <?= $form->field($model, 'numero') ?>
+
     <?= $form->field($model, 'nombre') ?>
 
-    <?= $form->field($model, 'created_at') ?>
-
-    <?= $form->field($model, 'telefono') ?>
+    <?= $form->field($model, 'direccion') ?>
 
     <?= $form->field($model, 'poblacion') ?>
+
+    <?php // echo $form->field($model, 'provincia') ?>
+
+    <?php // echo $form->field($model, 'cod_postal') ?>
+
+    <?php // echo $form->field($model, 'fecha_nac') ?>
+
+    <?php // echo $form->field($model, 'created_at') ?>
 
     <div class="form-group">
         <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>

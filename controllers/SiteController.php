@@ -9,6 +9,9 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\Libros;
+use app\models\SaludarForm;
+use yii\web\Request;
 
 class SiteController extends Controller
 {
@@ -64,6 +67,41 @@ class SiteController extends Controller
         return $this->render('index');
     }
 
+    public function actionHola($nombre = 'Pepito')
+    {
+        return Yii::$app->request->hostInfo;
+        // DAO
+        $fila = Yii::$app->db
+            ->createCommand('SELECT *
+                               FROM libros
+                              WHERE id = 1')
+            ->queryOne();
+        // Query Builder
+        $fila = (new \yii\db\Query())
+            ->from('libros')
+            ->where(['id' => 1])
+            ->one();
+        // ActiveRecord
+        $fila = Libros::findOne(1);
+        return $this->render('hola', [
+            'nombre' => $nombre,
+            'fila' => $fila,
+        ]);
+    }
+
+    public function actionSaludar()
+    {
+        $saludarForm = new SaludarForm();
+
+        if ($saludarForm->load(Yii::$app->request->post()) && $saludarForm->validate()) {
+            return $this->redirect(['site/index']);
+        }
+
+        return $this->render('saludar', [
+            'saludarForm' => $saludarForm,
+        ]);
+    }
+
     /**
      * Login action.
      *
@@ -77,7 +115,14 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+            if (Yii::$app->user->identity->token === null) {
+                return $this->goBack();
+            }else{
+                var_dump(Yii::$app->user->identity->token);
+                die;
+                Yii::$app->user->logout();
+                Yii::$app->session->setFlash('error','Debes validar el email. <a href="">Reenviar email</a>');
+            }
         }
 
         $model->password = '';
@@ -85,6 +130,8 @@ class SiteController extends Controller
             'model' => $model,
         ]);
     }
+
+    
 
     /**
      * Logout action.

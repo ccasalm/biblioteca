@@ -14,6 +14,7 @@ use yii\bootstrap4\ActiveForm;
 
     <?= $form->field($model, 'denom')->textInput(['maxlength' => true]) ?>
 
+
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>

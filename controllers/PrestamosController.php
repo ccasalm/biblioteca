@@ -2,12 +2,16 @@
 
 namespace app\controllers;
 
+use app\models\Lectores;
+use app\models\Libros;
 use Yii;
 use app\models\Prestamos;
 use app\models\PrestamosSearch;
+use yii\bootstrap4\ActiveForm;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
 
 /**
  * PrestamosController implements the CRUD actions for Prestamos model.
@@ -24,6 +28,7 @@ class PrestamosController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                    'devolver' => ['POST'],
                 ],
             ],
         ];
@@ -64,14 +69,21 @@ class PrestamosController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Prestamos();
+        $model = new Prestamos(['scenario' => Prestamos::SCENARIO_CREAR]);
+
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($model);
+        }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['index']);
         }
 
         return $this->render('create', [
             'model' => $model,
+            'libros' => Libros::lista(),
+            'lectores' => Lectores::lista(),
         ]);
     }
 
@@ -86,12 +98,19 @@ class PrestamosController extends Controller
     {
         $model = $this->findModel($id);
 
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($model);
+        }
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('update', [
             'model' => $model,
+            'libros' => Libros::lista(),
+            'lectores' => Lectores::lista(),
         ]);
     }
 
@@ -107,6 +126,20 @@ class PrestamosController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    public function actionDevolver($id)
+    {
+        $prestamo = $this->findModel($id);
+        if ($prestamo->devolucion === null) {
+            $prestamo->devolucion = date('Y-m-d H:i:s');
+            $prestamo->save();
+            Yii::$app->session->setFlash('success', 'Se ha devuelto el préstamo.');
+        } else {
+            Yii::$app->session->setFlash('error', 'El préstamo ya finalizó.');
+        }
+        
+        return $this->redirect(['prestamos/index']);
     }
 
     /**

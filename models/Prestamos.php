@@ -8,8 +8,8 @@ use Yii;
  * This is the model class for table "prestamos".
  *
  * @property int $id
- * @property int $lector_id
  * @property int $libro_id
+ * @property int $lector_id
  * @property string $created_at
  * @property string|null $devolucion
  *
@@ -18,6 +18,8 @@ use Yii;
  */
 class Prestamos extends \yii\db\ActiveRecord
 {
+    const SCENARIO_CREAR = 'create';
+
     /**
      * {@inheritdoc}
      */
@@ -32,14 +34,22 @@ class Prestamos extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['lector_id', 'libro_id'], 'required'],
-            [['lector_id', 'libro_id'], 'default', 'value' => null],
-            [['lector_id', 'libro_id'], 'integer'],
-            [['created_at', 'devolucion'], 'safe'],
+            [['libro_id', 'lector_id'], 'required'],
+            [['libro_id', 'lector_id'], 'default', 'value' => null],
+            [['libro_id', 'lector_id'], 'integer'],
             [['libro_id', 'lector_id', 'created_at'], 'unique', 'targetAttribute' => ['libro_id', 'lector_id', 'created_at']],
             [['lector_id'], 'exist', 'skipOnError' => true, 'targetClass' => Lectores::className(), 'targetAttribute' => ['lector_id' => 'id']],
             [['libro_id'], 'exist', 'skipOnError' => true, 'targetClass' => Libros::className(), 'targetAttribute' => ['libro_id' => 'id']],
+            [['libro_id'], 'comprobarPrestado', 'skipOnError' => true, 'on' => self::SCENARIO_CREAR],
         ];
+    }
+
+    public function comprobarPrestado($attribute, $params)
+    {
+        $libro = Libros::findOne($this->$attribute);
+        if ($libro->estaPrestado) {
+            $this->addError($attribute, 'Ese libro ya está prestado.');
+        }
     }
 
     /**
@@ -49,10 +59,10 @@ class Prestamos extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'lector_id' => 'Lector ID',
             'libro_id' => 'Libro ID',
-            'created_at' => 'Created At',
-            'devolucion' => 'Devolucion',
+            'lector_id' => 'Lector ID',
+            'created_at' => 'Fecha préstamo',
+            'devolucion' => 'Devolución',
         ];
     }
 
@@ -61,7 +71,7 @@ class Prestamos extends \yii\db\ActiveRecord
      */
     public function getLector()
     {
-        return $this->hasOne(Lectores::className(), ['id' => 'lector_id']);
+        return $this->hasOne(Lectores::className(), ['id' => 'lector_id'])->inverseOf('prestamos');
     }
 
     /**
@@ -69,6 +79,6 @@ class Prestamos extends \yii\db\ActiveRecord
      */
     public function getLibro()
     {
-        return $this->hasOne(Libros::className(), ['id' => 'libro_id']);
+        return $this->hasOne(Libros::className(), ['id' => 'libro_id'])->inverseOf('prestamos');
     }
 }

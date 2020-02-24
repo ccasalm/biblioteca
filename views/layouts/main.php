@@ -42,25 +42,27 @@ AppAsset::register($this);
         'options' => ['class' => 'navbar-nav'],
         'items' => [
             ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'Lectores', 'url' => ['/lectores/index']],
-            ['label' => 'Libros', 'url' => ['/libros/index']],
-            ['label' => 'Prestamos', 'url' => ['/prestamos/index']],
-            ['label' => 'Generos', 'url' => ['/generos/index']],
-
-
-
-            Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/site/login']]
-            ) : (
-                '<li class="nav-item">'
-                . Html::beginForm(['/site/logout'], 'post')
-                . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
-                    ['class' => 'btn btn-dark nav-link logout']
-                )
-                . Html::endForm()
-                . '</li>'
-            )
+            ['label' => 'Libros', 'url' => ['libros/index']],
+            ['label' => 'Lectores', 'url' => ['lectores/index']],
+            ['label' => 'Préstamos', 'url' => ['prestamos/index']],
+            ['label' => 'Géneros', 'url' => ['generos/index']],
+            ['label' => 'Contacto', 'url' => ['/site/contact']],
+            [
+                'label'=> 'Usuarios',
+                'items' => [
+                    Yii::$app->user->isGuest ? (
+                        ['label' => 'Login', 'url' => ['/site/login']]
+                    ) : (
+                        Html::beginForm(['/site/logout'], 'post')
+                        . Html::submitButton(
+                            'Logout (' . Yii::$app->user->identity->nombre . ')',
+                            ['class' => 'dropdown-item'],
+                        )
+                        . Html::endForm()
+                        ),
+                    ['label' => 'Registrarse', 'url' => ['usuarios/registrar'],'visible' => Yii::$app->user->isGuest],
+                ],
+            ],
         ],
     ]);
     NavBar::end();
@@ -77,7 +79,7 @@ AppAsset::register($this);
 
 <footer class="footer">
     <div class="container">
-        <p class="float-left">&copy; My Company <?= date('Y') ?></p>
+        <p class="float-left">&copy; IES Doñana <?= date('Y') ?></p>
 
         <p class="float-right"><?= Yii::powered() ?></p>
     </div>

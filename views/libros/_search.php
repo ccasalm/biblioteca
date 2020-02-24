@@ -17,13 +17,13 @@ use yii\bootstrap4\ActiveForm;
 
     <?= $form->field($model, 'id') ?>
 
-    <?= $form->field($model, 'titulo') ?>
+    <?= $form->field($model, 'isbn') ?>
 
-    <?= $form->field($model, 'genero_id') ?>
+    <?= $form->field($model, 'titulo') ?>
 
     <?= $form->field($model, 'num_pags') ?>
 
-    <?= $form->field($model, 'isbn') ?>
+    <?= $form->field($model, 'genero_id') ?>
 
     <?php // echo $form->field($model, 'created_at') ?>
 
