@@ -19,8 +19,13 @@ class PrestamosSearch extends Prestamos
     {
         return [
             [['id', 'libro_id', 'lector_id'], 'integer'],
-            [['created_at', 'devolucion'], 'safe'],
+            [['created_at', 'devolucion', 'titulo', 'nombre', 'libro.titulo', 'lector.nombre'], 'safe'],
         ];
+    }
+
+    public function attributes()
+    {
+        return array_merge(parent::attributes(),['libro.titulo', 'lector.nombre']);
     }
 
     /**
@@ -41,39 +46,48 @@ class PrestamosSearch extends Prestamos
      */
     public function search($params)
     {
-        $sort = new Sort([
-            'attributes' =>[
-                'libro.titulo' => [
-                    'asc' => ['l.titulo' => SORT_ASC],
-                    'desc' => ['l.titulo' => SORT_DESC],
+        // $sort = new Sort([
+        //     'attributes' =>[
+        //         'libro.titulo' => [
+        //             'asc' => ['l.titulo' => SORT_ASC],
+        //             'desc' => ['l.titulo' => SORT_DESC],
                     
-                ],
-                'lector.nombre' => [
-                    'asc' => ['lec.nombre' => SORT_ASC],
-                    'desc' => ['lec.nombre' => SORT_DESC],
-                ],
-                'created_at' => [
-                    'asc' => ['created_at' => SORT_ASC],
-                    'desc' => ['created_at' => SORT_DESC],
-                ],
-                'devolucion' => [
-                    'asc' => ['devolucion' => SORT_ASC],
-                    'desc' => ['devolucion' => SORT_DESC],
-                ],
+        //         ],
+        //         'lector.nombre' => [
+        //             'asc' => ['lec.nombre' => SORT_ASC],
+        //             'desc' => ['lec.nombre' => SORT_DESC],
+        //         ],
+        //         'created_at' => [
+        //             'asc' => ['created_at' => SORT_ASC],
+        //             'desc' => ['created_at' => SORT_DESC],
+        //         ],
+        //         'devolucion' => [
+        //             'asc' => ['devolucion' => SORT_ASC],
+        //             'desc' => ['devolucion' => SORT_DESC],
+        //         ],
                 
-            ]
-        ]);
+        //     ]
+        // ]);
 
         $query = Prestamos::find()->joinWith('libro l')->joinWith('lector lec');
 
         // add conditions that should always apply here
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => $sort,
+            //'sort' => $sort,
             'pagination' =>[
-                'pageSize' => 5,
+                'pageSize' => 2,
             ]
         ]);
+
+        $dataProvider->sort->attributes['libro.titulo'] = [
+            'asc' => ['l.titulo' => SORT_ASC],
+            'desc' => ['l.titulo' => SORT_DESC],
+        ];
+        $dataProvider->sort->attributes['lector.nombre'] = [
+            'asc' => ['lec.nombre' => SORT_ASC],
+            'desc' => ['lec.nombre' => SORT_DESC],
+        ];
 
 
         
@@ -94,6 +108,10 @@ class PrestamosSearch extends Prestamos
             'created_at' => $this->created_at,
             'devolucion' => $this->devolucion,
         ]);
+
+        $query->andFilterWhere(['ilike', 'lec.nombre', $this->getAttribute('lector.nombre')])
+        ->andFilterWhere(['ilike', 'l.titulo', $this->getAttribute('libro.titulo')]);
+
 
         return $dataProvider;
     }
