@@ -106,7 +106,7 @@ class LibrosController extends Controller
 
         return $this->render('create', [
             'model' => $model,
-            'generos' => Generos::lista(),
+            'generos' => Generos::(),
         ]);
     }
 
